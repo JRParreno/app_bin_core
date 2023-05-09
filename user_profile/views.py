@@ -62,7 +62,7 @@ class RegisterView(generics.CreateAPIView):
 
         if User.objects.filter(email=email).exists():
             data = {
-                "error_message": "Email Already exists"
+                "error_message": "Email already exists"
             }
             return response.Response(
                 data=data,
@@ -83,7 +83,7 @@ class RegisterView(generics.CreateAPIView):
         user.set_password(password)
         user.save()
 
-        UserProfile.objects.create(user=user,)
+        UserProfile.objects.create(user=user)
 
         oauth_token, refresh_token = self.create_access_token(
             user)
