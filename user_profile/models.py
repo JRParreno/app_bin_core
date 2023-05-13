@@ -13,8 +13,18 @@ class UserProfile(models.Model):
 
     profile_photo = models.ImageField(
         upload_to='images/profiles/', blank=True, null=True)
-    parent_user = models.ForeignKey(User, related_name='parent_user', 
-                                    on_delete=models.SET_NULL ,null=True, blank=True)
     
     def __str__(self):
         return f'{self.user.last_name} - {self.user.first_name}'
+
+
+class UserPairDevice(models.Model):
+
+    user_request = models.ForeignKey(UserProfile, related_name='user_request_device', on_delete=models.CASCADE)
+
+    user_pair = models.ForeignKey(UserProfile, related_name='user_pair_device',on_delete=models.CASCADE)
+
+    is_accepted = models.BooleanField(default=False)
+    
+    def __str__(self):
+        return f'{self.user_request.user.last_name} - {self.user_request.user.first_name}'

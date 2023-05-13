@@ -16,6 +16,7 @@ from django.conf import settings
 
 from user_profile.models import UserProfile
 from user_profile.serializers import RegisterSerializer, ProfileSerializer
+from api.serializers import UserSerializer
 
 
 class RegisterView(generics.CreateAPIView):
@@ -111,7 +112,6 @@ class ProfileView(generics.RetrieveUpdateAPIView):
 
         if user_profiles.exists():
             user_profile = user_profiles.first()
-
             data = {
                 "pk": str(user.pk),
                 "username": user.username,
