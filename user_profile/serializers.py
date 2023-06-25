@@ -5,7 +5,7 @@ import base64
 from django.core.files.base import ContentFile
 from datetime import datetime, timedelta
 from api.serializers import UserSerializer
-from .models import UserProfile
+from .models import UserPairDevice, UserProfile
 from api.utils import utils
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -35,18 +35,14 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 class ProfileSerializer(serializers.Serializer):
     user = UserSerializer()
-    parent_user = UserSerializer()
 
     profile_photo_image_64 = serializers.CharField(
         allow_null=True, required=False)
     profile_photo = serializers.SerializerMethodField()
-    address = serializers.CharField()
-    contact_number = serializers.CharField()
-
 
     class Meta:
         model = UserProfile
-        fields = ('user', 'parent_user',
+        fields = ('user',
                   'profile_photo', 'profile_photo_image_64')
 
         extra_kwargs = {
@@ -68,7 +64,6 @@ class ProfileSerializer(serializers.Serializer):
 
     def validate(self, attrs):
         user = attrs.get('user', None)
-        contact_number = attrs.get('contact_number', None)
         # get request context
         request = self.context['request']
 
@@ -108,3 +103,35 @@ class ProfileSerializer(serializers.Serializer):
         instance.save()
 
         return instance
+    
+
+class AddDeviceUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserPairDevice
+        fields = ('user_request',
+                  'user_pair',
+                  'is_accepted',
+                  )
+    
+    
+    def __init__(self, *args, **kwargs):
+        # init context and request
+        context = kwargs.get('context', {})
+        self.request = context.get('request', None)
+        super(AddDeviceUserSerializer, self).__init__(*args, **kwargs)
+
+
+class MyDeviceUserSerializer(serializers.ModelSerializer):
+    user_pair = ProfileSerializer()
+    class Meta:
+        model = UserPairDevice
+        fields = ('user_pair',
+                  'is_accepted',
+                  )
+    
+    
+    def __init__(self, *args, **kwargs):
+        # init context and request
+        context = kwargs.get('context', {})
+        self.request = context.get('request', None)
+        super(MyDeviceUserSerializer, self).__init__(*args, **kwargs)

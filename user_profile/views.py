@@ -14,10 +14,10 @@ from django.utils.crypto import get_random_string
 from django.contrib.auth.models import User
 from django.conf import settings
 
-from user_profile.models import UserProfile
-from user_profile.serializers import RegisterSerializer, ProfileSerializer
+from user_profile.models import UserProfile, UserPairDevice
+from user_profile.serializers import RegisterSerializer, ProfileSerializer, AddDeviceUserSerializer, MyDeviceUserSerializer
 from api.serializers import UserSerializer
-
+from api.paginate import ExtraSmallResultsSetPagination
 
 class RegisterView(generics.CreateAPIView):
     permission_classes = []
@@ -119,6 +119,7 @@ class ProfileView(generics.RetrieveUpdateAPIView):
                 "lastName": user.last_name,
                 "email": user.email,
                 "profilePhoto": request.build_absolute_uri(user_profile.profile_photo.url) if user_profile.profile_photo else None,
+                "profilePk": str(user_profile.pk),
             }
 
             return response.Response(data, status=status.HTTP_200_OK)
@@ -159,6 +160,7 @@ class ProfileView(generics.RetrieveUpdateAPIView):
             "lastName": user.last_name,
             "email": user.email,
             "profilePhoto": request.build_absolute_uri(user_profile.profile_photo.url) if user_profile.profile_photo else None,
+            "profilePk": str(user_profile.pk),
         }
 
         return response.Response(data, status=status.HTTP_200_OK)
@@ -169,3 +171,26 @@ class ProfileView(generics.RetrieveUpdateAPIView):
             'request': self.request
         })
         return context
+
+
+class AddDeviceUser(generics.CreateAPIView):
+    serializer_class = AddDeviceUserSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = UserPairDevice.objects.all()
+
+
+class MyDeviceUser(generics.ListAPIView):
+    serializer_class = MyDeviceUserSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = UserPairDevice.objects.all()
+    pagination_class = ExtraSmallResultsSetPagination
+
+    def get_queryset(self):
+        user = self.request.user
+        return UserPairDevice.objects.filter(user_request__user=user)
+
+class AcceptDeviceUser(generics.UpdateAPIView):
+    serializer_class = AddDeviceUserSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = UserPairDevice.objects.all()
+    

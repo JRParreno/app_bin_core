@@ -1,3 +1,4 @@
+from typing import Iterable, Optional
 from django.db import models
 from django.contrib.auth.models import User
 from app_bin_core import settings
@@ -28,3 +29,11 @@ class UserPairDevice(models.Model):
     
     def __str__(self):
         return f'{self.user_request.user.last_name} - {self.user_request.user.first_name}'
+
+    def save(self, *args, **kwargs):
+        if self.is_accepted:
+            print("Notify user request")
+        else:
+            print("Notify user pair")
+
+        super(UserPairDevice, self).save(*args, **kwargs)

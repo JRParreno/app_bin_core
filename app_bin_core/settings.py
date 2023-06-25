@@ -40,6 +40,8 @@ INSTALLED_APPS = [
 
     'api',
     'user_profile',
+    'device',
+    'app_week',
 
     'rest_framework',
     'drf_yasg',
@@ -134,7 +136,7 @@ REST_FRAMEWORK = {
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Manila'
 
 USE_I18N = True
 
