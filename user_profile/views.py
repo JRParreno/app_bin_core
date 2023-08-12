@@ -18,6 +18,8 @@ from user_profile.models import UserProfile, UserPairDevice
 from user_profile.serializers import RegisterSerializer, ProfileSerializer, AddDeviceUserSerializer, MyDeviceUserSerializer
 from api.serializers import UserSerializer
 from api.paginate import ExtraSmallResultsSetPagination
+from .serializers import UploadPhotoSerializer
+
 
 class RegisterView(generics.CreateAPIView):
     permission_classes = []
@@ -58,7 +60,7 @@ class RegisterView(generics.CreateAPIView):
         confirm_password = request.data.get('confirm_password')
         first_name = request.data.get('first_name')
         last_name = request.data.get('last_name')
-        
+
         email = request.data.get('email')
 
         if User.objects.filter(email=email).exists():
@@ -101,7 +103,8 @@ class RegisterView(generics.CreateAPIView):
             data=data,
             status=status.HTTP_200_OK
         )
-    
+
+
 class ProfileView(generics.RetrieveUpdateAPIView):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = ProfileSerializer
@@ -135,20 +138,19 @@ class ProfileView(generics.RetrieveUpdateAPIView):
         user_details = self.request.data.get('user')
         user_email = UserProfile.objects.filter(
             user__email=user_details['email']).exclude(user=user).exists()
-        
+
         if user_email:
             error = {
                 "error_message": "Email already exists"
             }
             return response.Response(error, status=status.HTTP_400_BAD_REQUEST)
 
-    
         user_profile = UserProfile.objects.get(user=user)
 
         user.email = user_details['email']
         user.first_name = user_details['first_name']
         user.last_name = user_details['last_name']
-        user.username = user_email
+        user.username = user_details['email']
         user.save()
 
         user_profile.save()
@@ -173,6 +175,12 @@ class ProfileView(generics.RetrieveUpdateAPIView):
         return context
 
 
+class UploadPhotoView(generics.UpdateAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = UploadPhotoSerializer
+    queryset = UserProfile.objects.all()
+
+
 class AddDeviceUser(generics.CreateAPIView):
     serializer_class = AddDeviceUserSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -189,8 +197,8 @@ class MyDeviceUser(generics.ListAPIView):
         user = self.request.user
         return UserPairDevice.objects.filter(user_request__user=user)
 
+
 class AcceptDeviceUser(generics.UpdateAPIView):
     serializer_class = AddDeviceUserSerializer
     permission_classes = [permissions.IsAuthenticated]
     queryset = UserPairDevice.objects.all()
-    

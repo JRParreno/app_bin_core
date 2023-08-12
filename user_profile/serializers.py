@@ -8,6 +8,7 @@ from api.serializers import UserSerializer
 from .models import UserPairDevice, UserProfile
 from api.utils import utils
 
+
 class RegisterSerializer(serializers.ModelSerializer):
     confirm_password = serializers.CharField(write_only=True)
 
@@ -32,6 +33,7 @@ class RegisterSerializer(serializers.ModelSerializer):
                 {"error_message": "Passwords do not match"})
 
         return data
+
 
 class ProfileSerializer(serializers.Serializer):
     user = UserSerializer()
@@ -103,7 +105,7 @@ class ProfileSerializer(serializers.Serializer):
         instance.save()
 
         return instance
-    
+
 
 class AddDeviceUserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -112,8 +114,7 @@ class AddDeviceUserSerializer(serializers.ModelSerializer):
                   'user_pair',
                   'is_accepted',
                   )
-    
-    
+
     def __init__(self, *args, **kwargs):
         # init context and request
         context = kwargs.get('context', {})
@@ -123,15 +124,30 @@ class AddDeviceUserSerializer(serializers.ModelSerializer):
 
 class MyDeviceUserSerializer(serializers.ModelSerializer):
     user_pair = ProfileSerializer()
+
     class Meta:
         model = UserPairDevice
         fields = ('user_pair',
                   'is_accepted',
                   )
-    
-    
+
     def __init__(self, *args, **kwargs):
         # init context and request
         context = kwargs.get('context', {})
         self.request = context.get('request', None)
         super(MyDeviceUserSerializer, self).__init__(*args, **kwargs)
+
+
+class UploadPhotoSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = UserProfile
+        fields = ['profile_photo',]
+
+    def __init__(self, *args, **kwargs):
+        # init context and request
+        context = kwargs.get('context', {})
+        self.request = context.get('request', None)
+        self.kwargs = context.get("kwargs", None)
+
+        super(UploadPhotoSerializer, self).__init__(*args, **kwargs)
