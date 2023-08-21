@@ -29,14 +29,15 @@ class DeviceAddListView(generics.ListCreateAPIView):
         device_code = request.data.get('device_code')
         device_name = request.data.get('device_name')
 
-        check_device_exists = Device.objects.filter(
-            device_code=device_code).exists
-        if check_device_exists:
-            error = {
-                "error_message": "Device Already Exists"
-            }
+        user_profile = UserProfile.objects.get(user__pk=self.request.user.pk)
 
-            user_profile = UserProfile.objects.get(pk=self.request.user.pk)
+        check_device_exists = Device.objects.filter(
+            device_code=device_code, user_profile=user_profile).exists()
+
+        if not check_device_exists:
+
+            user_profile = UserProfile.objects.get(
+                user__pk=self.request.user.pk)
 
             Device.objects.create(
                 user_profile=user_profile,
@@ -44,8 +45,16 @@ class DeviceAddListView(generics.ListCreateAPIView):
                 device_name=device_name,
             )
 
-            return response.Response(error, status=status.HTTP_200_OK)
-        return super().post(request, *args, **kwargs)
+            data = {
+                "succecss": "Device added successfully"
+            }
+
+            return response.Response(data, status=status.HTTP_200_OK)
+
+        error = {
+            "error_message": "Device Already Exists"
+        }
+        return response.Response(error, status=status.HTTP_400_BAD_REQUEST)
 
 
 class DeviceView(generics.ListAPIView):
