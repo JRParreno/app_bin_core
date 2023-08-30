@@ -40,7 +40,7 @@ class AppWeekListAddView(generics.ListCreateAPIView):
                                                       end_date__date=end_date,
                                                       ).exists()
 
-        user_profile = UserProfile.objects.get(pk=self.request.user.pk)
+        user_profile = UserProfile.objects.get(user__pk=self.request.user.pk)
 
         check_devices = Device.objects.filter(
             user_profile=user_profile,

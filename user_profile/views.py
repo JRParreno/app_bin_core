@@ -60,6 +60,7 @@ class RegisterView(generics.CreateAPIView):
         confirm_password = request.data.get('confirm_password')
         first_name = request.data.get('first_name')
         last_name = request.data.get('last_name')
+        is_parent = request.data.get('is_parent')
 
         email = request.data.get('email')
 
@@ -86,7 +87,7 @@ class RegisterView(generics.CreateAPIView):
         user.set_password(password)
         user.save()
 
-        UserProfile.objects.create(user=user)
+        UserProfile.objects.create(user=user, is_parent=is_parent).save()
 
         oauth_token, refresh_token = self.create_access_token(
             user)
@@ -123,6 +124,7 @@ class ProfileView(generics.RetrieveUpdateAPIView):
                 "email": user.email,
                 "profilePhoto": request.build_absolute_uri(user_profile.profile_photo.url) if user_profile.profile_photo else None,
                 "profilePk": str(user_profile.pk),
+                'isParent': user_profile.is_parent,
             }
 
             return response.Response(data, status=status.HTTP_200_OK)
@@ -163,6 +165,8 @@ class ProfileView(generics.RetrieveUpdateAPIView):
             "email": user.email,
             "profilePhoto": request.build_absolute_uri(user_profile.profile_photo.url) if user_profile.profile_photo else None,
             "profilePk": str(user_profile.pk),
+            "isParent": user_profile.is_parent,
+
         }
 
         return response.Response(data, status=status.HTTP_200_OK)
@@ -184,7 +188,50 @@ class UploadPhotoView(generics.UpdateAPIView):
 class AddDeviceUser(generics.CreateAPIView):
     serializer_class = AddDeviceUserSerializer
     permission_classes = [permissions.IsAuthenticated]
-    queryset = UserPairDevice.objects.all()
+    model = UserPairDevice
+
+    def get_object(self, queryset=None):
+        obj = self.request.user
+        return obj
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        serializer = self.get_serializer(data=request.data)
+
+        if serializer.is_valid():
+            email = serializer.data.get("email")
+            users = User.objects.exclude(
+                username=self.object.username).filter(username=email)
+
+            user_profiles = UserProfile.objects.filter(user__pk=self.object.pk)
+
+            if not user_profiles.exists():
+                return response.Response({"error_message":
+                                          "User has no profile"},
+                                         status=status.HTTP_400_BAD_REQUEST)
+
+            user_requets = UserPairDevice.objects.filter(
+                user_request=user_profiles.first())
+
+            if users.exists() and not user_requets.exists():
+                user_request = UserProfile.objects.get(user=self.object)
+                user_pair = UserProfile.objects.get(user=users.first())
+                UserPairDevice.objects.create(
+                    user_request=user_request, user_pair=user_pair)
+                data = {
+                    'status': 'success',
+                    'code': status.HTTP_200_OK,
+                    'message': 'Kindly accept the request from this email device.',
+                    'data': []
+                }
+
+                return response.Response(data)
+
+            return response.Response({"error_message":
+                                      "User does not exists, kindly check your email input."},
+                                     status=status.HTTP_400_BAD_REQUEST)
+
+        return response.Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class MyDeviceUser(generics.ListAPIView):

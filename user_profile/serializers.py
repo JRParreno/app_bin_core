@@ -11,12 +11,13 @@ from api.utils import utils
 
 class RegisterSerializer(serializers.ModelSerializer):
     confirm_password = serializers.CharField(write_only=True)
+    is_parent = serializers.BooleanField(write_only=True)
 
     class Meta:
         model = User
         fields = [
             'email', 'first_name', 'last_name',
-            'password', 'confirm_password'
+            'password', 'confirm_password', 'is_parent'
         ]
 
         extra_kwargs = {
@@ -107,19 +108,8 @@ class ProfileSerializer(serializers.Serializer):
         return instance
 
 
-class AddDeviceUserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = UserPairDevice
-        fields = ('user_request',
-                  'user_pair',
-                  'is_accepted',
-                  )
-
-    def __init__(self, *args, **kwargs):
-        # init context and request
-        context = kwargs.get('context', {})
-        self.request = context.get('request', None)
-        super(AddDeviceUserSerializer, self).__init__(*args, **kwargs)
+class AddDeviceUserSerializer(serializers.Serializer):
+    email = serializers.CharField(required=True)
 
 
 class MyDeviceUserSerializer(serializers.ModelSerializer):
