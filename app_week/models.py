@@ -17,8 +17,8 @@ class AppWeek(models.Model):
 class AppData(models.Model):
     app_service = models.ForeignKey(
         AppWeek, related_name='my_app_week', on_delete=models.CASCADE)
-    appName = models.CharField(max_length=50)
-    packageName = models.CharField(max_length=80)
+    app_name = models.CharField(max_length=50)
+    package_name = models.CharField(max_length=80)
     hours = models.IntegerField(default=0)
     minutes = models.IntegerField(default=0)
     start_date = models.DateTimeField()
