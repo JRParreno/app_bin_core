@@ -65,9 +65,9 @@ class DeviceView(generics.ListAPIView):
 
     def get_queryset(self):
         q = self.request.query_params.get('q', None)
-        queryset = Device.objects.all().order_by('device_name')
-        if q:
-            queryset = Device.objects.filter(
-                device_code=q).order_by('device_name')
+        user_profile = UserProfile.objects.get(
+            user__pk=self.request.user.pk)
+        queryset = Device.objects.filter(
+            device_code=q, user_profile=user_profile).order_by('device_name')
 
         return queryset
