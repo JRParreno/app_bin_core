@@ -53,3 +53,10 @@ class PushTokenSerializer(serializers.ModelSerializer):
 class ChangePasswordSerializer(serializers.Serializer):
     old_password = serializers.CharField(required=True)
     new_password = serializers.CharField(required=True)
+
+
+class ResetPasswordEmailRequestSerializer(serializers.Serializer):
+    email_address = serializers.EmailField(min_length=2)
+
+    class Meta:
+        fields = ['email_address']

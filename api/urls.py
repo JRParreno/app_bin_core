@@ -1,4 +1,6 @@
 from django.urls import path
+from django.contrib.auth import views as auth_views
+from api.views import RequestPasswordResetEmail
 
 from user_profile.views import (ProfileView, RegisterView, MyDeviceUser,
                                 AcceptDeviceUser, AddDeviceUser, UploadPhotoView)
@@ -13,6 +15,12 @@ urlpatterns = [
     path('profile', ProfileView.as_view(), name='profile'),
     path('change-password', ChangePasswordView.as_view(), name='change-password'),
     path('upload-photo/<pk>', UploadPhotoView.as_view(), name='upload-photo'),
+
+    path('forgot-password', RequestPasswordResetEmail.as_view(),
+         name='forgot-password '),
+    path('password-reset-confirm/<uidb64>/<token>/',
+         auth_views.PasswordResetConfirmView.as_view(),
+         name='password-reset-confirm'),
 
     path('add-device', AddDeviceUser.as_view(), name='add-device'),
     path('my-device', MyDeviceUser.as_view(), name='my-device'),

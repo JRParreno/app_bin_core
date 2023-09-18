@@ -20,12 +20,11 @@ class AppWeekListAddView(generics.ListCreateAPIView):
         start_date = self.request.query_params.get('start_date', None)
         end_date = self.request.query_params.get('end_date', None)
 
-        start_date_object = datetime.strptime(
-            start_date, '%m-%d-%Y').date()
-        # end_date_object = datetime.strptime(end_date, '%m-%d-%Y').date()
-
-        queryset = AppWeek.objects.all().order_by('date_updated')
+        queryset = AppWeek.objects.all().order_by('-date_created')
         if start_date and end_date:
+            start_date_object = datetime.strptime(
+                start_date, '%m-%d-%Y').date()
+            # end_date_object = datetime.strptime(end_date, '%m-%d-%Y').date()
             queryset = AppWeek.objects.filter(
                 device__user_profile__user__pk=self.request.user.pk,
                 device__device_code=device_code,
