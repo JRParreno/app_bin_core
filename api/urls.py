@@ -5,7 +5,7 @@ from api.views import RequestPasswordResetEmail
 from user_profile.views import (ProfileView, RegisterView, MyDeviceUser,
                                 AcceptDeviceUser, AddDeviceUser, UploadPhotoView)
 from device.views import DeviceAddListView, DeviceView
-from app_week.views import AppWeekListAddView, AppDataListAddView
+from app_week.views import AppDataListAddView
 from app_bin_core.views import ChangePasswordView
 
 app_name = 'api'
@@ -28,8 +28,5 @@ urlpatterns = [
 
     path('device-list', DeviceAddListView.as_view(), name='device-list'),
     path('device', DeviceView.as_view(), name='device'),
-
-    path('app-week-list', AppWeekListAddView.as_view(), name='app-week-list'),
     path('app-data-list', AppDataListAddView.as_view(), name='app-data-list'),
-
 ]

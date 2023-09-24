@@ -1,5 +1,4 @@
 from django.contrib import admin
-from .models import AppWeek, AppData
+from .models import AppData
 
-admin.site.register(AppWeek)
 admin.site.register(AppData)
