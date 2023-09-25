@@ -14,7 +14,14 @@
                 "192.168.1.20:8000"
             ],
             "django": true,
-            "justMyCode": true
+            "justMyCode": true,
+            "env": {
+                "EMAIL_HOST_USER": "cpstnprj2023@gmail.com",
+                "DEFAULT_FROM_EMAIL": "cpstnprj2023@gmail.com",
+                "EMAIL_HOST_PASSWORD": "ulpavjjdtmzizlrf",
+                "GOOGLE_APPLICATION_CREDENTIALS": "./appbinappsprod-6f2037713839.json",
+                "GOOGLE_CLOUD_PROJECT": "appbinappsprod"
+            }
         }
     ]
 }

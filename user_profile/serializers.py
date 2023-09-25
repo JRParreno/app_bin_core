@@ -41,7 +41,7 @@ class ProfileSerializer(serializers.Serializer):
 
     profile_photo_image_64 = serializers.CharField(
         allow_null=True, required=False)
-    profile_photo = serializers.SerializerMethodField()
+    profile_photo = serializers.SerializerMethodField(allow_null=True)
 
     class Meta:
         model = UserProfile
@@ -62,8 +62,11 @@ class ProfileSerializer(serializers.Serializer):
 
     def get_profile_photo(self, data):
         request = self.context.get('request')
-        photo_url = data.profile_photo.url
-        return request.build_absolute_uri(photo_url)
+        photo_url = data.profile_photo
+        if photo_url:
+
+            return request.build_absolute_uri(photo_url.url)
+        return None
 
     def validate(self, attrs):
         user = attrs.get('user', None)
@@ -118,7 +121,7 @@ class MyDeviceUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserPairDevice
         fields = ('user_pair',
-                  'is_accepted',
+                  'pair_status',
                   )
 
     def __init__(self, *args, **kwargs):

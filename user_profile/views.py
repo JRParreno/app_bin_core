@@ -242,7 +242,7 @@ class MyDeviceUser(generics.ListAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        return UserPairDevice.objects.filter(user_request__user=user)
+        return UserPairDevice.objects.all()
 
 
 class AcceptDeviceUser(generics.UpdateAPIView):
