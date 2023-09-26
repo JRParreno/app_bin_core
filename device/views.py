@@ -71,3 +71,21 @@ class DeviceView(generics.ListAPIView):
             device_code=q, user_profile=user_profile).order_by('device_name')
 
         return queryset
+
+
+class ViewAllUserDevices(generics.ListAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = DeviceSerializer
+    queryset = Device.objects.all().order_by('device_name')
+
+    def get_queryset(self):
+        q = self.request.query_params.get('q', None)
+        queryset = []
+
+        if q is not None:
+            user_profile = UserProfile.objects.get(
+                user__pk=q)
+            queryset = Device.objects.filter(
+                user_profile=user_profile).order_by('device_name')
+
+        return queryset

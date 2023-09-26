@@ -83,14 +83,15 @@ class AppDataListAddView(generics.ListCreateAPIView):
         device_code = self.request.query_params.get('device_code', None)
         start_date = self.request.query_params.get('start_date', None)
         end_date = self.request.query_params.get('end_date', None)
-
+        user_pk = self.request.query_params.get('user_pk', None)
         if start_date and end_date:
             # start_date_object = datetime.strptime(
             #     start_date, '%m-%d-%Y').date()
             # end_date_object = datetime.strptime(end_date, '%m-%d-%Y').date()
+            user = user_pk if user_pk is not None else self.request.user.pk
 
             queryset = AppData.objects.filter(
-                device__user_profile__user__pk=self.request.user.pk,
+                device__user_profile__user__pk=user,
                 device__device_code=device_code,
                 start_date__range=[start_date, end_date]).order_by('start_date')
 
