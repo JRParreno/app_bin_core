@@ -15,7 +15,8 @@ from django.contrib.auth.models import User
 from django.conf import settings
 
 from user_profile.models import UserProfile, UserPairDevice
-from user_profile.serializers import RegisterSerializer, ProfileSerializer, AddDeviceUserSerializer, MyDeviceUserSerializer
+from user_profile.serializers import (RegisterSerializer, ProfileSerializer, AddDeviceUserSerializer,
+                                      MyDeviceUserSerializer, AcceptDeviceUserSerializer)
 from api.serializers import UserSerializer
 from api.paginate import ExtraSmallResultsSetPagination
 from .serializers import UploadPhotoSerializer
@@ -221,7 +222,17 @@ class AddDeviceUser(generics.CreateAPIView):
                 data = {
                     'status': 'success',
                     'code': status.HTTP_200_OK,
-                    'message': 'Kindly accept the request from this email device.',
+                    'message': 'Kindly check the request to device associated with this email.',
+                    'data': []
+                }
+
+                return response.Response(data)
+
+            if user_requets.exists():
+                data = {
+                    'status': 'success',
+                    'code': status.HTTP_400_BAD_REQUEST,
+                    'message': 'You already pair request for this email/device.',
                     'data': []
                 }
 
@@ -242,10 +253,15 @@ class MyDeviceUser(generics.ListAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        return UserPairDevice.objects.all()
+        q = self.request.query_params.get('q', None)
+
+        if q is not None and q == 'request_device':
+            return UserPairDevice.objects.filter(user_pair__user=user)
+
+        return UserPairDevice.objects.filter(user_request__user=user)
 
 
 class AcceptDeviceUser(generics.UpdateAPIView):
-    serializer_class = AddDeviceUserSerializer
+    serializer_class = AcceptDeviceUserSerializer
     permission_classes = [permissions.IsAuthenticated]
     queryset = UserPairDevice.objects.all()

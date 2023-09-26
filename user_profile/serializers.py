@@ -120,7 +120,7 @@ class MyDeviceUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserPairDevice
-        fields = ('user_pair',
+        fields = ('pk', 'user_pair',
                   'pair_status',
                   )
 
@@ -144,3 +144,25 @@ class UploadPhotoSerializer(serializers.ModelSerializer):
         self.kwargs = context.get("kwargs", None)
 
         super(UploadPhotoSerializer, self).__init__(*args, **kwargs)
+
+
+class AcceptDeviceUserSerializer(serializers.ModelSerializer):
+    user_pair = ProfileSerializer(read_only=True)
+
+    class Meta:
+        model = UserPairDevice
+        fields = ('user_pair',
+                  'pair_status',
+                  )
+
+    extra_kwargs = {
+        'user_pair': {
+            'read_only': True
+        },
+    }
+
+    def __init__(self, *args, **kwargs):
+        # init context and request
+        context = kwargs.get('context', {})
+        self.request = context.get('request', None)
+        super(AcceptDeviceUserSerializer, self).__init__(*args, **kwargs)

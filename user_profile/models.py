@@ -51,7 +51,7 @@ class UserPairDevice(models.Model):
         body = f"App Bin Apps "
 
         if self.pair_status == 'PENDING':
-            body += f"{self.user_request.user.get_full_name()} is requesting to view your data as parent"
+            body += f"{self.user_request.user.get_full_name().upper()} is requesting to view your data as parent"
             devices = FCMDevice.objects.filter(
                 user=self.user_pair.user)
 
@@ -73,8 +73,48 @@ class UserPairDevice(models.Model):
                     )
                 )
         elif self.pair_status == 'ACCEPTED':
-            print("Notify user request accepted")
+            body += f"{self.user_pair.user.get_full_name().upper()} is accepted your request."
+            devices = FCMDevice.objects.filter(
+                user=self.user_request.user)
+
+            for device in devices:
+                data = {
+                    "title": "AppBinApps",
+                    "body": body,
+                    "pair_status": self.pair_status,
+                    "pk": str(self.pk)
+                }
+                device.send_message(
+                    Message(
+                        notification=Notification(
+                            title=self.pair_status, body=body
+                        ),
+                        data={
+                            "json": json.dumps(data)
+                        },
+                    )
+                )
         else:
-            print("Notify user rejected")
+            body += f"{self.user_pair.user.get_full_name().upper()} is rejected your request."
+            devices = FCMDevice.objects.filter(
+                user=self.user_request.user)
+
+            for device in devices:
+                data = {
+                    "title": "AppBinApps",
+                    "body": body,
+                    "pair_status": self.pair_status,
+                    "pk": str(self.pk)
+                }
+                device.send_message(
+                    Message(
+                        notification=Notification(
+                            title=self.pair_status, body=body
+                        ),
+                        data={
+                            "json": json.dumps(data)
+                        },
+                    )
+                )
 
         super(UserPairDevice, self).save(*args, **kwargs)
