@@ -39,14 +39,16 @@ class DeviceAddListView(generics.ListCreateAPIView):
             user_profile = UserProfile.objects.get(
                 user__pk=self.request.user.pk)
 
-            Device.objects.create(
+            device = Device.objects.create(
                 user_profile=user_profile,
                 device_code=device_code,
                 device_name=device_name,
             )
 
             data = {
-                "succecss": "Device added successfully"
+                "pk": device.pk,
+                "device_name": device.device_name,
+                "device_code": device.device_code
             }
 
             return response.Response(data, status=status.HTTP_200_OK)
