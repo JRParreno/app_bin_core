@@ -11,7 +11,7 @@
             "program": "${workspaceFolder}/manage.py",
             "args": [
                 "runserver",
-                "192.168.1.20:8000"
+                "192.168.1.12:8000"
             ],
             "django": true,
             "justMyCode": true,
@@ -20,7 +20,8 @@
                 "DEFAULT_FROM_EMAIL": "cpstnprj2023@gmail.com",
                 "EMAIL_HOST_PASSWORD": "ulpavjjdtmzizlrf",
                 "GOOGLE_APPLICATION_CREDENTIALS": "./appbinappsprod-6f2037713839.json",
-                "GOOGLE_CLOUD_PROJECT": "appbinappsprod"
+                "GOOGLE_CLOUD_PROJECT": "appbinappsprod",
+                "DATABASE_URL": "postgres://app_bin_backend_user:ixSXEjXG45FwFrRd9c9x5TXKRpTxVROt@dpg-ckig7romccbs738nucgg-a.oregon-postgres.render.com/app_bin_backend"
             }
         }
     ]
