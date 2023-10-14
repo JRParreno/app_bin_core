@@ -1,9 +1,8 @@
 from django.urls import path
 from django.contrib.auth import views as auth_views
-from api.views import RequestPasswordResetEmail
 
 from user_profile.views import (ProfileView, RegisterView, MyDeviceUser,
-                                AcceptDeviceUser, AddDeviceUser, UploadPhotoView)
+                                AcceptDeviceUser, AddDeviceUser, UploadPhotoView, RequestPasswordResetEmail)
 from device.views import DeviceAddListView, DeviceView, ViewAllUserDevices
 from app_week.views import AppDataListAddView
 from app_bin_core.views import ChangePasswordView

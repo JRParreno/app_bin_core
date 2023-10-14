@@ -54,6 +54,10 @@ urlpatterns = [
     path('o/login/', TokenViewWithUserId.as_view(), name='token'),
     path('admin/', admin.site.urls),
     path('api/', include('api.urls', namespace='api')),
+    path('password-reset-complete/',
+         auth_views.PasswordResetCompleteView.as_view(
+             template_name='password_reset_complete.html'),
+         name='password_reset_complete'),
 ]
 
 urlpatterns += router.urls

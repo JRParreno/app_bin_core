@@ -166,3 +166,10 @@ class AcceptDeviceUserSerializer(serializers.ModelSerializer):
         context = kwargs.get('context', {})
         self.request = context.get('request', None)
         super(AcceptDeviceUserSerializer, self).__init__(*args, **kwargs)
+
+
+class ResetPasswordEmailRequestSerializer(serializers.Serializer):
+    email_address = serializers.EmailField(min_length=2)
+
+    class Meta:
+        fields = ['email_address']
