@@ -6,7 +6,6 @@ from datetime import datetime
 class AppData(models.Model):
     device = models.ForeignKey(
         Device, related_name='my_device', on_delete=models.CASCADE)
-    start_date = models.DateTimeField()
     app_name = models.CharField(max_length=50)
     package_name = models.CharField(max_length=80)
     hours = models.IntegerField(default=0)

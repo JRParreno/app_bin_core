@@ -76,7 +76,6 @@ class AppDataListAddView(generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = AppDataSerializer
     queryset = AppData.objects.all().order_by('-date_created')
-    pagination_class = ExtraSmallResultsSetPagination
 
     def get_queryset(self):
 
