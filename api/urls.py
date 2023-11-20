@@ -3,7 +3,8 @@ from django.contrib.auth import views as auth_views
 
 from user_profile.views import (ProfileView, RegisterView, MyDeviceUser,
                                 AcceptDeviceUser, AddDeviceUser, UploadPhotoView, RequestPasswordResetEmail)
-from device.views import DeviceAddListView, DeviceView, ViewAllUserDevices, DeviceListApps, UpdateDeviceApp
+from device.views import (DeviceAddListView, DeviceView, ViewAllUserDevices,
+                          DeviceListApps, UpdateDeviceApp, BlockScheduleDetailView, BlockScheduleDetailCreateView)
 from app_week.views import AppDataListAddView
 from app_bin_core.views import ChangePasswordView
 
@@ -33,4 +34,10 @@ urlpatterns = [
     path('device-apps', DeviceListApps.as_view(), name='device-apps'),
     path('update-device-apps/<pk>', UpdateDeviceApp.as_view(),
          name='update-device-apps'),
+
+
+    path('schedule/detail/<pk>', BlockScheduleDetailView.as_view(),
+         name='schedule-detail'),
+    path('schedule/create', BlockScheduleDetailCreateView.as_view(),
+         name='schedule-create'),
 ]

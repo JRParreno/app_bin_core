@@ -1,9 +1,11 @@
+from django.http import Http404
 from django.shortcuts import get_object_or_404, render
 from rest_framework import status, viewsets, permissions, generics, response
+from rest_framework.views import APIView
 
 from api.paginate import ExtraSmallResultsSetPagination
-from .serializers import DeviceSerializer, DeviceAppSerializer
-from .models import Device, DeviceApp
+from .serializers import DeviceSerializer, DeviceAppSerializer, BlockScheduleSerializer, BlockScheduleCreateSerializer
+from .models import Device, DeviceApp, BlockSchedule
 from user_profile.models import UserProfile
 
 
@@ -129,3 +131,38 @@ class UpdateDeviceApp(generics.UpdateAPIView):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = DeviceAppSerializer
     queryset = DeviceApp.objects.all().order_by('app_name')
+
+
+class BlockScheduleDetailCreateView(generics.CreateAPIView):
+    serializer_class = BlockScheduleCreateSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = BlockSchedule.objects.all()
+
+
+class BlockScheduleDetailView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def patch(self, request, pk, format=None):
+        snippet = self.get_object(pk)
+        serializer = BlockScheduleSerializer(
+            snippet, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return response.Response(serializer.data)
+        return response.Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def get_object(self, pk):
+        try:
+            return BlockSchedule.objects.get(pk=pk)
+        except BlockSchedule.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        snippet = self.get_object(pk)
+        serializer = BlockScheduleSerializer(snippet)
+        return response.Response(serializer.data)
+
+    def delete(self, request, pk, format=None):
+        snippet = self.get_object(pk)
+        snippet.delete()
+        return response.Response(status=status.HTTP_204_NO_CONTENT)

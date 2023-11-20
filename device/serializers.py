@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Device, DeviceApp
+from .models import Device, DeviceApp, BlockSchedule
 
 
 class DeviceSerializer(serializers.ModelSerializer):
@@ -30,6 +30,47 @@ class DeviceSerializer(serializers.ModelSerializer):
             user_profile=user_profile, device_name=device_name, device_code=device_code)
 
         return instance
+
+
+class BlockScheduleCreateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = BlockSchedule
+        fields = ['pk',
+                  'my_date_time',
+                  'is_hourly',
+                  'hours',
+                  'minutes',
+                  'device',
+                  ]
+
+    def __init__(self, *args, **kwargs):
+        # init context and request
+        context = kwargs.get('context', {})
+        self.request = context.get('request', None)
+        self.kwargs = context.get("kwargs", None)
+
+        super(BlockScheduleCreateSerializer, self).__init__(*args, **kwargs)
+
+
+class BlockScheduleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BlockSchedule
+        fields = ['pk',
+                  'my_date_time',
+                  'is_hourly',
+                  'hours',
+                  'minutes',
+                  'device'
+                  ]
+
+    def __init__(self, *args, **kwargs):
+        # init context and request
+        context = kwargs.get('context', {})
+        self.request = context.get('request', None)
+        self.kwargs = context.get("kwargs", None)
+
+        super(BlockScheduleSerializer, self).__init__(*args, **kwargs)
 
 
 class DeviceAppSerializer(serializers.ModelSerializer):
