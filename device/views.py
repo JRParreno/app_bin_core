@@ -2,8 +2,8 @@ from django.shortcuts import get_object_or_404, render
 from rest_framework import status, viewsets, permissions, generics, response
 
 from api.paginate import ExtraSmallResultsSetPagination
-from .serializers import DeviceSerializer
-from .models import Device
+from .serializers import DeviceSerializer, DeviceAppSerializer
+from .models import Device, DeviceApp
 from user_profile.models import UserProfile
 
 
@@ -82,12 +82,50 @@ class ViewAllUserDevices(generics.ListAPIView):
 
     def get_queryset(self):
         q = self.request.query_params.get('q', None)
+        device_code = self.request.query_params.get('device_code', None)
+
         queryset = []
 
         if q is not None:
             user_profile = UserProfile.objects.get(
                 user__pk=q)
-            queryset = Device.objects.filter(
-                user_profile=user_profile).order_by('device_name')
+            if device_code is not None:
+                queryset = Device.objects.filter(
+                    user_profile=user_profile).exclude(device_code=device_code).order_by('device_name')
+            else:
+                queryset = Device.objects.filter(
+                    user_profile=user_profile).order_by('device_name')
 
         return queryset
+
+
+class DeviceListApps(generics.ListCreateAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = DeviceAppSerializer
+    queryset = DeviceApp.objects.all().order_by('app_name')
+
+    def post(self, request, *args, **kwargs):
+        data = request.data
+
+        serializer = DeviceAppSerializer(data=data['apps'], many=True)
+        if serializer.is_valid():
+            for app in data['apps']:
+                app_name = app['app_name']
+                package_name = app['package_name']
+                is_block = app['is_block']
+                device = get_object_or_404(Device, pk=app['device_id'])
+                check_device = DeviceApp.objects.filter(
+                    package_name=package_name, device__pk=app['device_id']).exists()
+
+                if not check_device:
+                    DeviceApp.objects.create(device=device, app_name=app_name,
+                                             package_name=package_name, is_block=is_block)
+            return response.Response(data, status=status.HTTP_200_OK)
+
+        return response.Response('error_message: "something went wrong"', status=status.HTTP_400_BAD_REQUEST)
+
+
+class UpdateDeviceApp(generics.UpdateAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = DeviceAppSerializer
+    queryset = DeviceApp.objects.all().order_by('app_name')

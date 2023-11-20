@@ -3,7 +3,7 @@ from django.contrib.auth import views as auth_views
 
 from user_profile.views import (ProfileView, RegisterView, MyDeviceUser,
                                 AcceptDeviceUser, AddDeviceUser, UploadPhotoView, RequestPasswordResetEmail)
-from device.views import DeviceAddListView, DeviceView, ViewAllUserDevices
+from device.views import DeviceAddListView, DeviceView, ViewAllUserDevices, DeviceListApps, UpdateDeviceApp
 from app_week.views import AppDataListAddView
 from app_bin_core.views import ChangePasswordView
 
@@ -30,5 +30,7 @@ urlpatterns = [
     path('device-list', DeviceAddListView.as_view(), name='device-list'),
     path('device', DeviceView.as_view(), name='device'),
     path('app-data-list', AppDataListAddView.as_view(), name='app-data-list'),
-
+    path('device-apps', DeviceListApps.as_view(), name='device-apps'),
+    path('update-device-apps/<pk>', UpdateDeviceApp.as_view(),
+         name='update-device-apps'),
 ]
