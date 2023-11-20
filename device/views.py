@@ -153,7 +153,7 @@ class BlockScheduleDetailView(APIView):
 
     def get_object(self, pk):
         try:
-            return BlockSchedule.objects.get(pk=pk)
+            return BlockSchedule.objects.get(device__pk=pk)
         except BlockSchedule.DoesNotExist:
             raise Http404
 
