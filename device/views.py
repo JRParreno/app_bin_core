@@ -116,8 +116,12 @@ class DeviceListApps(generics.ListCreateAPIView):
                 package_name = app['package_name']
                 is_block = app['is_block']
                 device = get_object_or_404(Device, pk=app['device_id'])
+                user = self.request.user.pk
+
                 check_device = DeviceApp.objects.filter(
-                    package_name=package_name, device__pk=app['device_id']).exists()
+                    package_name=package_name, device__pk=app[
+                        'device_id'], device__user_profile__user__pk=user,
+                ).exists()
 
                 if not check_device:
                     DeviceApp.objects.create(device=device, app_name=app_name,
