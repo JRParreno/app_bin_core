@@ -106,6 +106,16 @@ class DeviceListApps(generics.ListCreateAPIView):
     serializer_class = DeviceAppSerializer
     queryset = DeviceApp.objects.all().order_by('app_name')
 
+    def get_queryset(self):
+        device_code = self.request.query_params.get('device_code', None)
+        user = self.request.user.pk
+        if device_code is not None:
+            return DeviceApp.objects.filter(device__device_code=device_code,
+                                            device__user_profile__user__pk=user,
+                                            ).order_by('app_name')
+
+        return super().get_queryset()
+
     def post(self, request, *args, **kwargs):
         data = request.data
 
